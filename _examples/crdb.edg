@@ -1,0 +1,49 @@
+let rows       = 1000
+let batch_size = 100
+
+stages {
+  sustain(workers: 2, duration: 10s, qps: 100)
+}
+
+up {
+  create_greetings `CREATE TABLE IF NOT EXISTS greetings (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      message STRING NOT NULL,
+      roll INT NOT NULL,
+      card_number STRING NOT NULL,
+      initials STRING NOT NULL,
+      slug STRING NOT NULL,
+      secret STRING NOT NULL
+    )`
+}
+
+seed {
+  populate_greetings(type: exec_batch, count: rows, size: batch_size)
+    `INSERT INTO greetings (message, roll, card_number, initials, slug, secret)
+    __values__` (
+        hello(gen('firstname')),
+        dice(20),
+        card_mask(string(gen('creditcardnumber')), 4),
+        initials(gen('name')),
+        slug(gen('name')),
+        rot13(gen('firstname'))
+    )
+}
+
+deseed {
+  truncate_greetings(type: exec) `TRUNCATE TABLE greetings`
+}
+
+down {
+  drop_greetings(type: exec) `DROP TABLE IF EXISTS greetings`
+}
+
+init {
+  fetch_greetings `SELECT id, message, roll FROM greetings LIMIT 1000`
+}
+
+run {
+  get_greeting `SELECT * FROM greetings WHERE id = $1::UUID` (ref_rand('fetch_greetings').id)
+
+  high_rollers `SELECT * FROM greetings WHERE roll >= $1 LIMIT 10` (dice(20))
+}

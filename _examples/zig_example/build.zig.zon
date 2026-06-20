@@ -1,0 +1,9 @@
+.{
+    .name = .zig_example,
+    .version = "0.0.0",
+    .fingerprint = 0x1d7cddc7f09a53ad,
+    .dependencies = .{
+        .edg_plugin = .{ .path = "../../zig" },
+    },
+    .paths = .{"."},
+}

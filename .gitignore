@@ -1,0 +1,10 @@
+# Rust build artifacts.
+**/target/
+**/.rustc_info.json
+
+# Zig build artifacts.
+**/zig-out/
+**/.zig-cache/
+
+# Chonky.
+*.wasm

@@ -1,0 +1,6 @@
+.{
+    .name = .edg_plugin,
+    .version = "0.1.0",
+    .fingerprint = 0x82d4c121b4735b84,
+    .paths = .{"."},
+}
